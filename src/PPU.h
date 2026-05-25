@@ -33,6 +33,9 @@ extern unsigned short	DrawArray[256*240];
 
 extern unsigned char VsSecurity;
 
+// rveach: allow turning sprites on and off
+extern BOOL NoSprites;
+
 void	GetHandlers (void);
 void	SetRegion (void);
 void	PowerOn (void);
