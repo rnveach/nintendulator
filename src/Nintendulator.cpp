@@ -87,16 +87,13 @@ int APIENTRY	_tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpC
 	for (i = _tcslen(ProgPath); (i > 0) && (ProgPath[i] != _T('\\')); i--)
 		ProgPath[i] = 0;
 
-	// find our folder in Application Data, if it exists
-	if (!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, DataPath)))
+	// get the current working directory, if possible
+	if (GetCurrentDirectory(MAX_PATH, DataPath) == 0)
 	{
 		// if we can't even find that, then there's a much bigger problem...
-		MessageBox(NULL, _T("FATAL: unable to locate Application Data folder"), _T("Nintendulator"), MB_OK | MB_ICONERROR);
+		MessageBox(NULL, _T("FATAL: unable to retrieve current working directory"), _T("Nintendulator"), MB_OK | MB_ICONERROR);
 		return FALSE;
 	}
-	PathAppend(DataPath, _T("Nintendulator"));
-	if (GetFileAttributes(DataPath) == INVALID_FILE_ATTRIBUTES)
-		CreateDirectory(DataPath, NULL);
 
 	// Perform application initialization:
 	if (!InitInstance (hInstance, nCmdShow)) 
