@@ -1458,7 +1458,7 @@ void	LoadSettings (void)
 	SizeMult = 2;
 	FixAspect = FALSE;
 	SoundEnabled = TRUE;
-	dbgVisible = TRUE;
+	dbgVisible = FALSE;
 	CPU::LogBadOps = FALSE;
 
 	FrameStep = FALSE;
