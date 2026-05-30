@@ -38,6 +38,9 @@ BOOL AutoRun;
 BOOL FrameStep, GotStep;
 BOOL HasMenu;
 Region CurRegion = REGION_NONE;
+#ifdef	ENABLE_DEBUGGER
+int initialDebuggerMode = 0;
+#endif
 
 unsigned char PRG_ROM[MAX_PRGROM_SIZE][0x1000];
 unsigned char PRG_RAM[MAX_PRGRAM_SIZE][0x1000];
@@ -72,9 +75,6 @@ void	Init (void)
 	Debugger::Init();
 #endif	/* ENABLE_DEBUGGER */
 	States::Init();
-#ifdef	ENABLE_DEBUGGER
-	Debugger::SetMode(0);
-#endif	/* ENABLE_DEBUGGER */
 	LoadSettings();
 
 	GFX::Start();
@@ -88,6 +88,10 @@ void	Init (void)
 	ZeroMemory(&RI, sizeof(RI));
 
 	UpdateTitlebar();
+
+#ifdef	ENABLE_DEBUGGER
+	Debugger::SetMode(initialDebuggerMode);
+#endif	/* ENABLE_DEBUGGER */
 }
 
 void	Destroy (void)
@@ -1429,6 +1433,11 @@ void	SaveSettings (void)
 	RegSetValueEx(SettingsBase, _T("Path_AVI"), 0, REG_SZ, (LPBYTE)Path_AVI, (DWORD)(sizeof(TCHAR) * _tcslen(Path_AVI)));
 	RegSetValueEx(SettingsBase, _T("Path_PAL"), 0, REG_SZ, (LPBYTE)Path_PAL, (DWORD)(sizeof(TCHAR) * _tcslen(Path_PAL)));
 
+#ifdef	ENABLE_DEBUGGER
+	int mode = Debugger::Mode;
+	RegSetValueEx(SettingsBase, _T("Mode")        , 0, REG_DWORD, (LPBYTE)&mode            , sizeof(mode));
+#endif
+
 	RegSetValueEx(SettingsBase, _T("ConfigVersion"), 0, REG_DWORD, (LPBYTE)&ConfigVersion, sizeof(DWORD));
 
 	APU::SaveSettings(SettingsBase);
@@ -1482,6 +1491,10 @@ void	LoadSettings (void)
 	Size = MAX_PATH * sizeof(TCHAR);	RegQueryValueEx(SettingsBase, _T("Path_NMV"), 0, NULL, (LPBYTE)&Path_NMV, &Size);
 	Size = MAX_PATH * sizeof(TCHAR);	RegQueryValueEx(SettingsBase, _T("Path_AVI"), 0, NULL, (LPBYTE)&Path_AVI, &Size);
 	Size = MAX_PATH * sizeof(TCHAR);	RegQueryValueEx(SettingsBase, _T("Path_PAL"), 0, NULL, (LPBYTE)&Path_PAL, &Size);
+
+#ifdef	ENABLE_DEBUGGER
+	Size = sizeof(initialDebuggerMode);	RegQueryValueEx(SettingsBase, _T("Mode"), 0, NULL, (LPBYTE)&initialDebuggerMode, &Size);
+#endif
 
 	APU::LoadSettings(SettingsBase);
 	Controllers::LoadSettings(SettingsBase);
